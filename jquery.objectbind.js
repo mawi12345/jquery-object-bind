@@ -6,9 +6,9 @@
 */
 (function( $, undefined ){
 	
-    /* 
-     * gets an converter by his namespace
-     * if no converter is found an pass-through convert is returned
+	/* 
+	 * gets an converter by his namespace
+	 * if no converter is found an pass-through convert is returned
 	 */
 	function getConverterByNamespace(namespace, converters) {
     	var n = namespace.slice();
@@ -34,16 +34,16 @@
 		};
 	}
 	
-    /* 
-     * recursive visit function
-     * visits all propertys of an object
-     * 
-     * model: the object
-     * target: the DOM Element (form)
-     * options: supplied options element
-     * object: the subject under observation 
-     *         if undefined the model is used
-     * namesapce: the current namespace (array)
+	/* 
+	 * recursive visit function
+	 * visits all propertys of an object
+	 * 
+	 * model: the object
+	 * target: the DOM Element (form)
+	 * options: supplied options element
+	 * object: the subject under observation 
+	 *         if undefined the model is used
+	 * namesapce: the current namespace (array)
 	 */
 	function visit(model, target, options, object, namespace) {
 		
@@ -103,12 +103,12 @@
 		});
 	}
 	
-    /* 
-     * sets an value on the model using the value namespace
-     * 
-     * model: the object
-     * namesapce: the namespace (array)
-     * value: the new value
+	/* 
+	 * sets an value on the model using the value namespace
+	 * 
+	 * model: the object
+	 * namesapce: the namespace (array)
+	 * value: the new value
 	 */
 	function setValueByNamespace(model, namespace, value) {
     	var ns = namespace.slice();
