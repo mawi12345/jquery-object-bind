@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../jquery.objectbind.min.js"></script>
+		<script type="text/javascript" src="../object.watch.polyfill.js"></script> 
+		<script type="text/javascript">
+		$(function(){
+			
+			function pad(number, length) {
+			    var str = '' + number;
+			    while (str.length < length) {
+			        str = '0' + str;
+			    }
+			    return str;
+			};
+			
+			$.bindObjectConverter = {
+					'date': {
+						'toView': function(value) {
+							var d = new Date(value*1000);
+							return pad(d.getDate(),2)+'.'+pad(d.getMonth()+1,2)+'.'+d.getFullYear();
+						},
+						'toModel': function(value) {
+							var t = ['.', ',', '-', '/'];
+							var s = ',';
+							$.each(t, function(index, item) {
+								if (value.indexOf(item) > 0) {
+									s = item;
+								}
+							});
+							var a = value.split(s);
+							if (a.length < 3) return 0;
+							if (a[2].length < 3) a[2] = '20'+pad(a[2], 2);
+							var d = new Date(a[2], a[1]-1, a[0]);
+							return Math.floor(d.getTime() / 1000);
+						}
+						
+					}
+				};
+			
+			user = {
+				id: 1213,
+				name: {
+					first: 'Franz',
+					last: 'Smith'
+				},
+				level: 34,
+				birth: 587772000
+			}
+			
+			var options = {
+				watchObject: true,
+				converter: {
+					name: {
+						first: {
+							toView: function(value) {
+								return value;
+							},
+							toModel: function(value) {
+								return value.substr(0,1).toUpperCase() + value.substr(1).toLowerCase();
+							}
+						}
+					},
+					birth: $.bindObjectConverter.date
+				}
+			}
+			
+			$('#user-edit-form1').bindObject(user, options);
+			$('#user-edit-form2').bindObject(user, $.extend(true, {}, options, {
+				converter: {
+					name: {
+						first: {
+							toView: function(value) {
+								return value.toUpperCase();
+							}
+						}
+					}
+				}
+			}));
+		});
+		</script>
+	</head>
+	<body>
+		<form id="user-edit-form1">
+			<input name="id" />
+			<input name="name-first" />
+			<input name="name-last" />
+			<input name="level" />
+			<input name="birth" />
+		</form>
+		<form id="user-edit-form2">
+			<input name="id" />
+			<input name="name-first" />
+			<input name="name-last" />
+			<input name="level" />
+			<input name="birth" />
+		</form>
+	</body>
+</html>

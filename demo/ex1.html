@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../jquery.objectbind.js"></script>
+		<script type="text/javascript">
+		$(function(){
+			user = {
+				id: 1213,
+				name: {
+					first: 'Franz',
+					last: 'Smith'
+				},
+				level: 34
+			}
+			$('#user-edit-form').bindObject(user);
+			
+		});
+		</script>
+	</head>
+	<body>
+		<form id="user-edit-form">
+			<input name="id" />
+			<input name="name-first" />
+			<input name="name-last" />
+			<input name="level" />
+		</form>
+	</body>
+</html>
+	
