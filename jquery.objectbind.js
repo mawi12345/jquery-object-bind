@@ -1,13 +1,15 @@
 /*!
-* jQuery Object bind v0.1
-*
-* Copyright Martin Wind.
-* Dual licensed under the MIT or GPL Version 2 licenses.
-*/
+ * jQuery Object bind v0.3.0
+ *
+ * Copyright Martin Wind.
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ */
 (function( $, undefined ){
 	
+	var optionsKey = 'bind-object-options';
+	
 	/* 
-	 * gets an converter by his namespace
+	 * gets an converter by namespace
 	 * if no converter is found an pass-through convert is returned
 	 */
 	function getConverterByNamespace(namespace, converters) {
@@ -36,21 +38,21 @@
 	
 	/* 
 	 * recursive visit function
-	 * visits all propertys of an object
+	 * visits all properties of an object
 	 * 
 	 * model: the object
-	 * target: the DOM Element (form)
+	 * container: the DOM Element
 	 * options: supplied options element
 	 * object: the subject under observation 
 	 *         if undefined the model is used
 	 * namesapce: the current namespace (array)
 	 */
-	function visit(model, target, options, object, namespace) {
+	function visit(model, container, options, object, namespace) {
 		
 		if (typeof namespace == 'undefined') namespace = new Array();
 		if (typeof object == 'undefined') object = model;
 		$.each(object, function(key, value) {
-			// ignore propertys and methods that start with '_'
+			// ignore properties and methods that start with '_'
 			if (key.substr(0,1) == '_') return;
 			// is an object or array
     		if ($.isPlainObject(value) || $.isArray(value)) {
@@ -58,7 +60,7 @@
     			n.push(key);
     			// recursive call visit with new subject under observation 
     			// and the new namespace
-    			visit(model,target, options, value, n);
+    			visit(model, container, options, value, n);
     		// is function or property
     		} else {
     			// copy namespace and add the key
@@ -68,31 +70,28 @@
     			if ($.isFunction(value)) {
     				// call the function with "this" as the model
     				value =  $.proxy(value, model)();
-    			}
-    			// get the namespace as string, the DOM element and the converter
-    			var nss = options.namespaceToString(ns);
-    			var el = target.find(options.selector.replace(/%/g, nss));
+    			}    			
+    			
+    			var el = container.find(options.selector(ns));
     			var c = getConverterByNamespace(ns, options.converter);
-    			// set the value of DOM element
-    			el.val(c.toView(value));
+    			
+    			// set the value of DOM element by accessFn
+    			el[options.accessFn](c.toView(value));
     			if (options.watchTarget) {
     				// listen for change events and call setValueByNamespace
 	    			el.bind('change', function(){
-	    				setValueByNamespace(model, ns, c.toModel( $(this).val() ) );
+	    				setValueByNamespace(model, ns, c.toModel( $(this)[options.accessFn]() ) );
 	    			});
     			}
     			if (options.watchObject) {
     				// add an property change listener
     				object.watch(key, function (key, oldval, newval) {
-    					$.each(model._targets, function(index, target){
-    						// get the target options
-    						var options = target.data('bind-object-options');
-    						// find the target DOM element using the target options
-    						var el = target.find(options.selector.replace(/%/g, nss));
-    						// get converter using the target options
+    					$.each(model._containers, function(index, container){
+    						var options = container.data(optionsKey);
+       						var el = container.find(options.selector(ns));
     						var c = getConverterByNamespace(ns, options.converter);
-    						// set DOM elemet value
-    						el.val(c.toView(newval));
+    						// set the value of DOM element by accessFn
+    						el[options.accessFn](c.toView(newval));
     					});
     					// return the new value
     					// see: https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object/watch
@@ -128,6 +127,7 @@
 
     $.fn.extend({
         bindObject: function (object, options) {
+        	var container = $(this);
         	//defaults
         	var defaults = { 
         		// converter functions
@@ -136,27 +136,40 @@
         		watchTarget: true,
         		// update target on object changes
         		watchObject: false,
-        		// selcetor to find the form fields
-        		// % will be replaced by namespaceToString return value
-        		selector: '[name="%"]',
-        		namespaceToString: function(ns){
-        			return ns.join('-');
+        		// selector to find the form fields by namespace
+        		selector: function(ns){
+        			return '[name="'+ns.join('-')+'"]';
+        		},
+        		accessFn: 'val',
+        		unbind: false
+        	};
+        	var shortcut;
+        	if (typeof options == 'string') {
+        		shortcut = options;
+        		options = $.extend({}, container.data(optionsKey));
+        		if (shortcut == 'update') {
+        			options.watchTarget = false;
+        			options.watchObject = false;	
+        		} else if (shortcut == 'unbind') {
+        			options.unbind = true;
+        			//TODO: implement feature
         		}
-        	}; 
-        	var options = $.extend({}, defaults, options); 
-        	var target = $(this);
-        	// store the options in the target
-        	target.data('bind-object-options', options);
-        	if (options.watchObject) {
-	        	// add the target to the object _targets array
-	        	if ($.isArray(object._targets)) {
-	        		object._targets.push(target);
+        	}
+        	var options = $.extend({}, defaults, options);
+        	if (shortcut == undefined) {
+	        	// store the options in the container
+	        	container.data(optionsKey, options);
+	        	// add the container to the object _containers array
+	        	if ($.isArray(object._containers)) {
+	        		object._containers.push(container);
 	        	} else {
-	        		object._targets = [target];
+	        		object._containers = [container];
 	        	}
         	}
         	// visit all properties
-        	visit(object, target, options);
+        	visit(object, container, options);
+        	// return container for chaining
+        	return container;
         }
     }); 
 	

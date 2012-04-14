@@ -13,7 +13,9 @@
 				},
 				level: 34
 			}
-			$('#user-edit-form').bindObject(user);
+			$('#user-edit-form').bindObject(user).on('change', function(){
+				console.log(user);
+			})
 			
 		});
 		</script>
