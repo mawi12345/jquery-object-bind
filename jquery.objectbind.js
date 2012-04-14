@@ -1,5 +1,5 @@
 /*!
- * jQuery Object bind v0.3.0
+ * jQuery Object bind v0.4.0
  *
  * Copyright Martin Wind.
  * Dual licensed under the MIT or GPL Version 2 licenses.

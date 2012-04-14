@@ -1,4 +1,4 @@
-## jQuery object bind plugin v0.3.0
+## jQuery object bind plugin v0.4.0
 
 The plugin allows you to link fields of a form to an object.
 
