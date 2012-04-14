@@ -7,22 +7,23 @@
 (function( $, undefined ){
 	
 	var optionsKey = 'bind-object-options';
+	var eventNamespace = '.bindobject';
 	
 	/* 
 	 * gets an converter by namespace
 	 * if no converter is found an pass-through convert is returned
 	 */
 	function getConverterByNamespace(namespace, converters) {
-    	var n = namespace.slice();
-    	var c = converters;
-    	while (n.length > 0) {
-    		var k = n.shift();
-    		if ($.isPlainObject(c[k])) {
-    			c = c[k];
-    		} else {
-    			break;
-    		}
-    	}
+		var n = namespace.slice();
+		var c = converters;
+		while (n.length > 0) {
+			var k = n.shift();
+			if ($.isPlainObject(c[k])) {
+				c = c[k];
+			} else {
+				break;
+			}
+		}
 		if ($.isPlainObject( c ) && $.isFunction( c.toModel ) && $.isFunction( c.toView )) {
 			return c;
 		} 
@@ -34,6 +35,23 @@
 				return value;
 			}
 		};
+	}
+	
+	/* 
+	 * recursive unbind function
+	 * unwatch all properties of an object
+	 */
+	function unbind(object) {
+		$.each(object, function(key, value) {
+			// ignore properties and methods that start with '_'
+			if (key.substr(0,1) == '_') return;
+    		if ($.isPlainObject(value) || $.isArray(value)) {
+    			// recursive call visit with new subject under observation 
+    			unbind(value);
+    		} else if (!$.isFunction(value)) {
+    			object.unwatch(key);
+    		}
+		});
 	}
 	
 	/* 
@@ -49,8 +67,8 @@
 	 */
 	function visit(model, container, options, object, namespace) {
 		
-		if (typeof namespace == 'undefined') namespace = new Array();
-		if (typeof object == 'undefined') object = model;
+		if (namespace == undefined) namespace = new Array();
+		if (object == undefined) object = model;
 		$.each(object, function(key, value) {
 			// ignore properties and methods that start with '_'
 			if (key.substr(0,1) == '_') return;
@@ -79,7 +97,7 @@
     			el[options.accessFn](c.toView(value));
     			if (options.watchTarget) {
     				// listen for change events and call setValueByNamespace
-	    			el.bind('change', function(){
+	    			el.on('change'+eventNamespace, function(){
 	    				setValueByNamespace(model, ns, c.toModel( $(this)[options.accessFn]() ) );
 	    			});
     			}
@@ -140,8 +158,7 @@
         		selector: function(ns){
         			return '[name="'+ns.join('-')+'"]';
         		},
-        		accessFn: 'val',
-        		unbind: false
+        		accessFn: 'val'
         	};
         	var shortcut;
         	if (typeof options == 'string') {
@@ -151,8 +168,17 @@
         			options.watchTarget = false;
         			options.watchObject = false;	
         		} else if (shortcut == 'unbind') {
-        			options.unbind = true;
-        			//TODO: implement feature
+        			// unbind event namespace
+        			container.off(eventNamespace);
+        			// remove container from object._containers
+        			object._containers = $.grep(object._containers, function(value) {
+        				return !value.is(container);
+        			});
+        			if (object._containers.length == 0) {
+        				delete object[_containers];
+        				unbind(object);
+        			}
+        			return container;
         		}
         	}
         	var options = $.extend({}, defaults, options);
@@ -172,5 +198,4 @@
         	return container;
         }
     }); 
-	
 })(jQuery);
