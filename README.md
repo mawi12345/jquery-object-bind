@@ -97,7 +97,7 @@ The option `convertBackOnChange: true` activates the automatic form update with 
 Some times the default selector dosn't fit to the requirements. This example shows how to use an different mapping selector and access function.
 The option `selector` let you specify an function that converts the namespace array to an jQuery selector. 
 The namespace array contains a object name chain of nested objects. 
-For example the `user.id` property has the namespace `['id']` and the `user.name.first` property ['name', 'first']`.
+For example the `user.id` property has the namespace `['id']` and the `user.name.first` property `['name', 'first']`.
 The easiest way is to use the `Array.join` method to convert the array to string and then prefix it with `.` or `#`.
 This example also shows how to use the `accessFn` option. `accessFn` is the method name called on the element to set and get his value.
 jQuery provides `val` (the defaul value), `html` and `text`.
