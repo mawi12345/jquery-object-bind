@@ -1,5 +1,5 @@
 /*!
- * jQuery Object bind v0.4.0
+ * jQuery Object bind v0.5.0
  *
  * Copyright Martin Wind.
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -99,6 +99,11 @@
     				// listen for change events and call setValueByNamespace
 	    			el.on('change'+eventNamespace, function(){
 	    				setValueByNamespace(model, ns, c.toModel( $(this)[options.accessFn]() ) );
+	    				// if options.watchObject is true the value will automatically set by
+	    				// the watch handler to c.toView
+	    				if (options.convertBackOnChange && !options.watchObject) {
+	    					$(this)[options.accessFn]( c.toView( c.toModel( $(this)[options.accessFn]() ) ) );
+	    				}
 	    			});
     			}
     			if (options.watchObject) {
@@ -154,6 +159,8 @@
         		watchTarget: true,
         		// update target on object changes
         		watchObject: false,
+        		// push the value from 'toView' to the element on change
+        		convertBackOnChange: false,
         		// selector to find the form fields by namespace
         		selector: function(ns){
         			return '[name="'+ns.join('-')+'"]';

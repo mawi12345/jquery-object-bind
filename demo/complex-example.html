@@ -18,28 +18,28 @@
 			
 			// define an reusable converter
 			$.bindObjectConverter = {
-					'date': {
-						'toView': function(value) {
-							var d = new Date(value*1000);
-							return pad(d.getDate(),2)+'.'+pad(d.getMonth()+1,2)+'.'+d.getFullYear();
-						},
-						'toModel': function(value) {
-							var t = ['.', ',', '-', '/'];
-							var s = ',';
-							$.each(t, function(index, item) {
-								if (value.indexOf(item) > 0) {
-									s = item;
-								}
-							});
-							var a = value.split(s);
-							if (a.length < 3) return 0;
-							if (a[2].length < 3) a[2] = '20'+pad(a[2], 2);
-							var d = new Date(a[2], a[1]-1, a[0]);
-							return Math.floor(d.getTime() / 1000);
-						}
-						
+				'date': {
+					'toView': function(value) {
+						var d = new Date(value*1000);
+						return pad(d.getDate(),2)+'.'+pad(d.getMonth()+1,2)+'.'+d.getFullYear();
+					},
+					'toModel': function(value) {
+						var t = ['.', ',', '-', '/'];
+						var s = ',';
+						$.each(t, function(index, item) {
+							if (value.indexOf(item) > 0) {
+								s = item;
+							}
+						});
+						var a = value.split(s);
+						if (a.length < 3) return 0;
+						if (a[2].length < 3) a[2] = '20'+pad(a[2], 2);
+						var d = new Date(a[2], a[1]-1, a[0]);
+						return Math.floor(d.getTime() / 1000);
 					}
-				};
+					
+				}
+			};
 			// the object to bind
 			user = {
 				id: 1213,
@@ -49,7 +49,7 @@
 				},
 				level: 34,
 				birth: 587772000
-			}
+			};
 			// options with customer converter
 			var options = {
 				watchObject: true,
@@ -66,7 +66,7 @@
 					},
 					birth: $.bindObjectConverter.date
 				}
-			}
+			};
 			
 			$('#user-edit-form1').bindObject(user, options);
 			

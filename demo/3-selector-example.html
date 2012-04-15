@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="../jquery.objectbind.js"></script>
+		<script type="text/javascript">
+		$(function(){
+			user = {
+				id: 1213,
+				name: {
+					first: 'Franz',
+					last: 'Smith'
+				},
+				level: 34
+			};
+			
+			$('#html-test').bindObject(user, {
+				accessFn: 'html',
+        		selector: function(ns){
+        			return '#'+ns.join('-');
+        		}
+			});
+			
+		});
+		</script>
+	</head>
+	<body>
+		<div id="html-test">
+			<span id="id"></span> 
+			<span id="name-first"></span> 
+			<span id="name-last"></span>
+			<span id="level"></span>
+		</div>
+	</body>
+</html>
+	
