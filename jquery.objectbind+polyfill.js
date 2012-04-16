@@ -1,5 +1,5 @@
 /*!
- * jQuery Object bind v0.5.1
+ * jQuery Object bind v0.5.2
  *
  * Copyright Martin Wind.
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -38,13 +38,22 @@
 	}
 	
 	/* 
+	 * ignore properties and methods that start with '_'
+	 */
+	function ignoreProperty(key) {
+		if (typeof key == 'string') {
+			return (key.substr(0,1) == '_');
+		}
+		return false;
+	}
+	
+	/* 
 	 * recursive unbind function
 	 * unwatch all properties of an object
 	 */
 	function unbind(object) {
 		$.each(object, function(key, value) {
-			// ignore properties and methods that start with '_'
-			if (key.substr(0,1) == '_') return;
+			if (ignoreProperty(key)) return;
     		if ($.isPlainObject(value) || $.isArray(value)) {
     			// recursive call visit with new subject under observation 
     			unbind(value);
@@ -70,8 +79,7 @@
 		if (namespace == undefined) namespace = new Array();
 		if (object == undefined) object = model;
 		$.each(object, function(key, value) {
-			// ignore properties and methods that start with '_'
-			if (key.substr(0,1) == '_') return;
+			if (ignoreProperty(key)) return;
 			// is an object or array
     		if ($.isPlainObject(value) || $.isArray(value)) {
     			var n = namespace.slice();
