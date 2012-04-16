@@ -1,4 +1,4 @@
-## jQuery object bind plugin v0.5.0
+## jQuery object bind plugin v0.5.1
 
 The plugin allows you to link fields of a form to an object.
 
@@ -54,7 +54,6 @@ This example shows the basic usage of an converter.
 An converter consists of of an object of the two function `toView` and `toModel`.
 `toView` converts the object property to the displayed value and `toModel` converts the user input the the stored value.
 In this example `toView` only passes the object value to the form but `toModel` converts the input to first letter in upper case and the remaining letters to lower case.
-The option `convertBackOnChange: true` activates the automatic form update with the objective to immediately push the value converted by `toModel` to the form field.
 
 	<script type="text/javascript">
 	$(function(){
@@ -68,7 +67,6 @@ The option `convertBackOnChange: true` activates the automatic form update with 
 		};
 		
 		var options = {
-			convertBackOnChange: true,
 			converter: {
 				name: {
 					first: {
