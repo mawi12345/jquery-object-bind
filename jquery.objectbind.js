@@ -1,5 +1,5 @@
 /*!
- * jQuery Object bind v0.5.2
+ * jQuery Object bind v0.5.3
  *
  * Copyright Martin Wind.
  * Dual licensed under the MIT or GPL Version 2 licenses.
@@ -20,6 +20,8 @@
 			var k = n.shift();
 			if ($.isPlainObject(c[k])) {
 				c = c[k];
+			} else if ($.isPlainObject(c['*'])) {
+				c = c['*'];
 			} else {
 				break;
 			}
@@ -29,6 +31,12 @@
 		} 
 		return {
 			toView: function(value) {
+				if (typeof value == 'boolean') {
+					if (value) 
+						return 1;
+					else
+						return 0;
+				}
 				return value;
 			},
 			toModel: function(value) {
@@ -191,8 +199,10 @@
         				return !value.is(container);
         			});
         			if (object._containers.length == 0) {
-        				delete object[_containers];
-        				unbind(object);
+        				delete object['_containers'];
+        				if (options.watchObject) {
+        					unbind(object);
+        				}
         			}
         			return container;
         		}
